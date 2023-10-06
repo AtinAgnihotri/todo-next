@@ -9,3 +9,10 @@ export const createTaskInput = z.object({
   priority: z.nativeEnum(Priority),
   description: z.string(),
 });
+
+export const taskOperationInput = z.object({ id: z.number() });
+
+export const taskFavouriteOperation = z.object({
+  id: z.number(),
+  isFavourite: z.boolean(),
+});

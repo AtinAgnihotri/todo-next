@@ -25,17 +25,20 @@ import {
 
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
+import { LoadingSpinner } from "./loading";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   onNewClick: () => void;
+  isLoading: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   onNewClick,
+  isLoading,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -70,14 +73,20 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       <DataTableToolbar table={table} onNewClick={onNewClick} />
-      <div className="rounded-md border">
+      <div className="relative rounded-md border">
         <Table>
           <TableHeader className="text-white">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="text-white">
+              <TableRow
+                key={headerGroup.id}
+                className="border-purple-400 text-white"
+              >
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      className="border-purple-400 text-purple-400"
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -119,6 +128,11 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
+        {isLoading && (
+          <div className="overlay absolute bottom-0 left-0 right-0 top-0 z-10 flex flex-1 items-center justify-center bg-black/60">
+            <LoadingSpinner size={32} />
+          </div>
+        )}
       </div>
       <DataTablePagination table={table} />
     </div>

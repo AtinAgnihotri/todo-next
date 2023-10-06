@@ -16,6 +16,7 @@ type TTaskTable = {
   userName: string;
   userImage: string;
   onNewClick: () => void;
+  isLoading: boolean;
 };
 
 export default function TaskTable({
@@ -23,6 +24,7 @@ export default function TaskTable({
   userImage,
   userName,
   onNewClick,
+  isLoading,
 }: TTaskTable) {
   return (
     <>
@@ -40,7 +42,12 @@ export default function TaskTable({
             <UserNav avatarImage={userImage} avatarName={userName} />
           </div>
         </div>
-        <DataTable data={tasks} columns={columns} onNewClick={onNewClick} />
+        <DataTable
+          data={tasks}
+          columns={columns}
+          onNewClick={onNewClick}
+          isLoading={isLoading}
+        />
       </div>
     </>
   );

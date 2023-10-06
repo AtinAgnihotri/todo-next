@@ -9,6 +9,7 @@ import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { TableTask } from "~/lib/schema";
 import { labels, priorities, statuses } from "~/lib/data";
+import { StarFilledIcon } from "@radix-ui/react-icons";
 
 export const columns: ColumnDef<TableTask>[] = [
   {
@@ -33,28 +34,25 @@ export const columns: ColumnDef<TableTask>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "id",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Task" />
-    ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue("id")}</div>,
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
     accessorKey: "title",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Title" />
     ),
     cell: ({ row }) => {
-      const label = labels.find((label) => label.value === row.original.label);
+      const label = row.original.label;
 
       return (
-        <div className="flex space-x-2">
-          {label && <Badge variant="outline">{label.label}</Badge>}
+        <div className="flex items-center space-x-2 border-purple-400 data-[state=selected]:font-bold data-[state=selected]:text-black ">
+          {label && (
+            <Badge variant="outline" className="text-purple-400 ">
+              {label}
+            </Badge>
+          )}
+
           <span className="max-w-[500px] truncate font-medium">
             {row.getValue("title")}
           </span>
+          {row.original.isFavourite && <StarFilledIcon />}
         </div>
       );
     },
@@ -68,13 +66,12 @@ export const columns: ColumnDef<TableTask>[] = [
       const status = statuses.find(
         (status) => status.value === row.getValue("status"),
       );
-
       if (!status) {
         return null;
       }
 
       return (
-        <div className="flex w-[100px] items-center">
+        <div className="flex w-[70px] items-center">
           {status.icon && (
             <status.icon className="text-muted-foreground mr-2 h-4 w-4" />
           )}
@@ -113,6 +110,24 @@ export const columns: ColumnDef<TableTask>[] = [
     filterFn: (row, id, value) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
       return value.includes(row.getValue(id));
+    },
+  },
+  {
+    accessorKey: "description",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Description" />
+    ),
+    cell: ({ row }) => {
+      const label = labels.find((label) => label.value === row.original.label);
+
+      return (
+        <div className="flex space-x-2">
+          {label && <Badge variant="outline">{label.label}</Badge>}
+          <span className="max-w-[500px] truncate font-medium">
+            {row.getValue("description")}
+          </span>
+        </div>
+      );
     },
   },
   {

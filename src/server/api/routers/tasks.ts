@@ -1,7 +1,11 @@
 // import { TodoTask } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { createTaskInput } from "~/lib/type-validations";
+import {
+  createTaskInput,
+  taskFavouriteOperation,
+  taskOperationInput,
+} from "~/lib/type-validations";
 
 import {
   createTRPCRouter,
@@ -74,8 +78,34 @@ export const tasksRouter = createTRPCRouter({
         });
       }
     }),
+  updateTask: privateProcedure
+    .input(z.object({ id: z.number(), task: createTaskInput }))
+    .mutation(async ({ ctx, input }) => {
+      const { name, tag, isFavourite, priority, description, status } =
+        input.task;
+      try {
+        await ctx.db.todo.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            name,
+            tag,
+            isFavourite,
+            priority,
+            desc: description,
+            status,
+          },
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Couldn't update details for task" + String(err),
+        });
+      }
+    }),
   deleteTask: privateProcedure
-    .input(z.object({ id: z.number() }))
+    .input(taskOperationInput)
     .mutation(async ({ input, ctx }) => {
       try {
         await ctx.db.todo.delete({
@@ -87,6 +117,27 @@ export const tasksRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Couldn't delete the task",
+        });
+      }
+    }),
+
+  updateFavourite: privateProcedure
+    .input(taskFavouriteOperation)
+    .mutation(async ({ ctx, input }) => {
+      const { id, isFavourite } = input;
+      try {
+        await ctx.db.todo.update({
+          where: {
+            id,
+          },
+          data: {
+            isFavourite,
+          },
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Couldn't make task favourite",
         });
       }
     }),

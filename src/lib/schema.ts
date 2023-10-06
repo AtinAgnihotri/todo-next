@@ -8,6 +8,8 @@ export const taskSchema = z.object({
   status: z.string(),
   label: z.string(),
   priority: z.string(),
+  description: z.string(),
+  isFavourite: z.boolean(),
 });
 
 export type TableTask = z.infer<typeof taskSchema>;

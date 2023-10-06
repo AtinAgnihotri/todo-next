@@ -37,6 +37,8 @@ export const todoToTask = (data: Todo[] | undefined): TableTask[] => {
       status,
       label: tag,
       priority,
+      description: desc,
+      isFavourite,
     }),
   );
 };
