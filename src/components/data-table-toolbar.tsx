@@ -12,11 +12,13 @@ import CreateNew from "./create-new";
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
   onNewClick: () => void;
+  onSearchChange: (val: string) => void;
 }
 
 export function DataTableToolbar<TData>({
   table,
   onNewClick,
+  onSearchChange,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
@@ -26,9 +28,10 @@ export function DataTableToolbar<TData>({
         <Input
           placeholder="Filter tasks..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
-          }
+          onChange={(event) => {
+            table.getColumn("title")?.setFilterValue(event.target.value);
+            onSearchChange(event.target.value);
+          }}
           className="h-8 w-[150px] lg:w-[250px]"
         />
         {table.getColumn("status") && (

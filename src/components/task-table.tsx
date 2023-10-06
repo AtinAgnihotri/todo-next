@@ -17,6 +17,12 @@ type TTaskTable = {
   userImage: string;
   onNewClick: () => void;
   isLoading: boolean;
+  setPageSize: (size: number) => void;
+  hasPrevCursor?: boolean | undefined;
+  hasNextCursor?: boolean | undefined;
+  moveToNextPage?: () => void;
+  moveToPrevPage?: () => void;
+  onSearchChange: (val: string) => void;
 };
 
 export default function TaskTable({
@@ -25,6 +31,12 @@ export default function TaskTable({
   userName,
   onNewClick,
   isLoading,
+  setPageSize,
+  hasNextCursor,
+  hasPrevCursor,
+  moveToNextPage,
+  moveToPrevPage,
+  onSearchChange,
 }: TTaskTable) {
   return (
     <>
@@ -47,6 +59,12 @@ export default function TaskTable({
           columns={columns}
           onNewClick={onNewClick}
           isLoading={isLoading}
+          setPageSize={setPageSize}
+          moveToNextPage={moveToNextPage}
+          moveToPrevPage={moveToPrevPage}
+          hasNextCursor={hasNextCursor}
+          hasPrevCursor={hasPrevCursor}
+          onSearchChange={onSearchChange}
         />
       </div>
     </>

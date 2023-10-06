@@ -44,7 +44,7 @@ export function InputForm({ isLoading, mutate, defaultVals }: TInputForm) {
       ? defaultVals
       : {
           name: "",
-          tag: "",
+          tag: "New",
           status: Status.TODO,
           isFavourite: false,
           priority: Priority.LOW,

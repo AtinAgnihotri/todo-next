@@ -9,7 +9,6 @@ import {
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -32,6 +31,12 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   onNewClick: () => void;
   isLoading: boolean;
+  setPageSize: (size: number) => void;
+  hasPrevCursor?: boolean | undefined;
+  hasNextCursor?: boolean | undefined;
+  moveToNextPage?: () => void;
+  moveToPrevPage?: () => void;
+  onSearchChange: (val: string) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -39,6 +44,12 @@ export function DataTable<TData, TValue>({
   data,
   onNewClick,
   isLoading,
+  setPageSize,
+  hasNextCursor,
+  hasPrevCursor,
+  moveToNextPage,
+  moveToPrevPage,
+  onSearchChange,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -64,15 +75,19 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    manualPagination: true,
   });
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} onNewClick={onNewClick} />
+      <DataTableToolbar
+        table={table}
+        onNewClick={onNewClick}
+        onSearchChange={onSearchChange}
+      />
       <div className="relative rounded-md border">
         <Table>
           <TableHeader className="text-white">
@@ -134,7 +149,14 @@ export function DataTable<TData, TValue>({
           </div>
         )}
       </div>
-      <DataTablePagination table={table} />
+      <DataTablePagination
+        setPageSize={setPageSize}
+        table={table}
+        hasNextCursor={hasNextCursor}
+        hasPrevCursor={hasPrevCursor}
+        moveToNextPage={moveToNextPage}
+        moveToPrevPage={moveToPrevPage}
+      />
     </div>
   );
 }

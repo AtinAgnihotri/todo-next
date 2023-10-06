@@ -26,6 +26,7 @@ export const tasksRouter = createTRPCRouter({
       z.object({
         limit: z.number().min(1).max(100).nullish(),
         cursor: z.number().nullish(),
+        searchStr: z.string(),
       }),
     )
     .query(async ({ input, ctx }) => {
@@ -36,6 +37,14 @@ export const tasksRouter = createTRPCRouter({
         take: limit + 1, // get an extra item at the end which we'll use as next cursor
         where: {
           userId,
+          OR: [
+            {
+              name: {
+                contains: input.searchStr,
+                mode: "insensitive",
+              },
+            },
+          ],
         },
         cursor: cursor ? { id: cursor } : undefined,
         orderBy: {

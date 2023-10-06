@@ -1,6 +1,7 @@
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import Head from "next/head";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { LoadingPage } from "~/components/loading";
 import TaskTable from "~/components/task-table";
 import { Button } from "~/components/ui/button";
@@ -12,6 +13,11 @@ export default function Home() {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
   const { user, isLoaded: isUserLoaded, isSignedIn } = useUser();
+
+  const [pageSize, setPageSize] = useState(10);
+  const [searchStr, setSearchStr] = useState("");
+  const [currentCursor, setCurrentCursor] = useState<number>();
+  const [lastCursors, setLastCursors] = useState<number[]>([]);
 
   // const {
   //   fetchNextPage,
@@ -26,7 +32,37 @@ export default function Home() {
   // } = api.tasks.getTasksForUser.useInfiniteQuery({});
   // const dd = data?.pages[0];
 
-  const { data, isLoading, isError } = api.tasks.getTasksForUser.useQuery({});
+  // useEffect(() => {
+  //   void ctx.tasks.getTasksForUser.invalidate();
+  // }, [pageSize]);
+
+  const { data, isLoading, isError } = api.tasks.getTasksForUser.useQuery({
+    limit: pageSize,
+    cursor: currentCursor,
+    searchStr,
+  });
+
+  useEffect(() => {
+    setCurrentCursor(undefined);
+    setLastCursors([]);
+  }, [pageSize]);
+
+  // useEffect(() => {
+  //   setLastCursor(currentCursor);
+  //   setCurrentCursor(data?.nextCursor);
+  // }, [data?.nextCursor]);
+
+  const handleNextPage = () => {
+    if (currentCursor) setLastCursors([...lastCursors, currentCursor]);
+    setCurrentCursor(data?.nextCursor);
+  };
+
+  const handlePrevPage = () => {
+    const cursors = [...lastCursors];
+    const lastCursor = cursors.pop();
+    setCurrentCursor(lastCursor);
+    setLastCursors(cursors);
+  };
   // const { todos, cursor } = data;
 
   const renderLoggedOutView = () => {
@@ -58,6 +94,12 @@ export default function Home() {
           userImage={user.imageUrl ?? ""}
           onNewClick={() => console.log("Add New")}
           isLoading={isLoading}
+          setPageSize={setPageSize}
+          hasNextCursor={!!data?.nextCursor}
+          hasPrevCursor={!!currentCursor}
+          moveToNextPage={handleNextPage}
+          moveToPrevPage={handlePrevPage}
+          onSearchChange={setSearchStr}
         />
       </div>
     ) : (
