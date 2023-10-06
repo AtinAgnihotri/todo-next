@@ -6,15 +6,48 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
+    provider = "postgres"
     url      = env("DATABASE_URL")
 }
 
-model Example {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+// model TodoTask {
+//     id          Int    @id @default(autoincrement())
+//     name        String
+//     description String
+
+// updatedAt   DateTime @updatedAt
+
+// teamId      String
+
+//     @@index([name])
+// }
+
+// model Todo {
+//     id          Int    @id @default(autoincrement())
+//     name        String
+//     description String
+
+//     @@index([name])
+// }
+
+model Todo {
+    id          Int      @id @default(autoincrement())
+    name        String
+    tag         String
+    status      String
+    priority    String
+    isFavourite Boolean
+    createdAt   DateTime @default(now())
+    userId      String
+    desc        String
+    // UserTeam UserTeam[]
 
     @@index([name])
 }
+
+// model UserTeam {
+//     id       Int    @id @default(autoincrement())
+//     team     Team   @relation(fields: [authorId], references: [id])
+//     authorId Int
+//     userId   String
+// }
